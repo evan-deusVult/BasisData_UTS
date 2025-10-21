@@ -12,40 +12,18 @@
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="{{ asset('css/theme.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/theme.css') }}?v={{ time() }}">
 
   <style>
+    /* Layout specifics */
     body {
-      background-color: #f9f9f9;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #dfd8d8;
       min-height: 100vh;
       position: relative;
       padding-bottom: 220px; /* tinggi footer + margin */
     }
-    .navbar {
-      background: #a59f9fff;
-      border-bottom: 1px solid #a59f9fff;
-    }
-    .navbar-brand span {
-      color: #a59f9fff;
-      font-weight: 700;
-      margin-left: 8px;
-    }
-    .event-card {
-      border: 1px solid #e5e5e5;
-      border-radius: 12px;
-      overflow: hidden;
-      background: #fff;
-      transition: transform .2s ease;
-    }
-    .event-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
+    
     footer {
-      background: #f1f1f1;
-      color: #555;
       padding: 40px 0;
       margin-top: 60px;
       position: absolute;
@@ -54,10 +32,11 @@
       bottom: 0;
       width: 100%;
     }
+    
     footer a {
-      color: #555;
       text-decoration: none;
     }
+    
     footer a:hover {
       text-decoration: underline;
     }
@@ -128,7 +107,9 @@
             </li>
           @endif
           <li class="nav-item">
-            <button id="theme-toggle" class="btn btn-outline-secondary ms-3">🌙 Dark Mode</button>
+            <button id="theme-toggle" class="btn btn-outline-secondary btn-sm ms-2">
+              <i class="bi bi-moon-fill"></i> Dark Mode
+            </button>
           </li>
         </ul>
       </div>
@@ -170,7 +151,7 @@
           <h6>Quick Links</h6>
           <ul class="list-unstyled">
             <li><a href="{{ url('/') }}">Events</a></li>
-            <li><a href="#">About Us</a></li>
+            <li><a href="{{ route('about') }}">About Us</a></li>
             <li><a href="#">Contact</a></li>
           </ul>
         </div>
@@ -189,6 +170,6 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="{{ asset('js/theme-toggle.js') }}" defer></script>
+  <script src="{{ asset('js/theme-toggle.js') }}?v={{ time() }}" defer></script>
 </body>
 </html>

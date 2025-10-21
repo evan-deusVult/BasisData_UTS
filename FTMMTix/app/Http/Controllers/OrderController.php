@@ -59,12 +59,6 @@ class OrderController extends Controller
 
     public function placeOrder(Request $request)
     {
-
-
-
-
-
-
         $user = auth('user')->user() ?? auth('lecturer')->user() ?? auth()->user();
         if (!$user) {
             return redirect()->route('login')->withErrors('Harap login dulu sebelum memesan tiket.');
@@ -102,7 +96,7 @@ class OrderController extends Controller
             Payment::create([
                 'order_id' => $order->id,
                 'amount'   => $order->total_amount,
-                'status'   => 'AWAITING_PAYMENT',
+                'status'   => 'PENDING',
             ]);
 
             session()->forget('cart');
@@ -110,6 +104,78 @@ class OrderController extends Controller
             return redirect()->route('payments.showBanks', $order->id)
                 ->with('success', 'Order berhasil dibuat. Silakan lanjutkan ke pembayaran dan upload bukti transfer untuk mendapatkan e-ticket.');
         });
+    }
 
+    // Handle order dari form order-ticket.blade.php
+    public function storeOrder(Request $request)
+    {
+        $request->validate([
+            'event_id' => 'required|exists:events,id',
+            'name' => 'required|string',
+            'email' => 'required|email',
+            'quantity' => 'required|integer|min:1'
+        ]);
+
+        // Deteksi user dari guard mana yang login
+        $user = null;
+        $userType = null;
+        
+        if (auth('web')->check()) {
+            $user = auth('web')->user();
+            $userType = 'student';
+        } elseif (auth('lecturer')->check()) {
+            $user = auth('lecturer')->user();
+            $userType = 'lecturer';
+        } elseif (auth('user')->check()) {
+            $user = auth('user')->user();
+            $userType = 'user';
+        }
+
+        if (!$user) {
+            return redirect()->route('login')->withErrors('Harap login dulu sebelum memesan tiket.');
+        }
+
+        $event = Event::findOrFail($request->event_id);
+        
+        // Hitung total (asumsi event punya price atau pakai ticket_type pertama)
+        $price = $event->price ?? 0;
+        $totalAmount = $price * $request->quantity;
+
+        return DB::transaction(function () use ($request, $user, $userType, $event, $totalAmount, $price) {
+            $orderData = [
+                'code'         => 'FTMM-' . now()->format('Ymd') . '-' . Str::upper(Str::random(6)),
+                'status'       => 'UNPAID',
+                'total_amount' => $totalAmount,
+            ];
+
+            // Set correct user id field based on user type
+            if ($userType === 'lecturer') {
+                $orderData['lecturer_id'] = $user->id;
+            } elseif ($userType === 'user') {
+                $orderData['user_id'] = $user->id;
+            } else { // student
+                $orderData['student_id'] = $user->id;
+            }
+
+            $order = Order::create($orderData);
+
+            OrderItem::create([
+                'order_id'       => $order->id,
+                'event_id'       => $request->event_id,
+                'ticket_type_id' => null, // atau ambil dari event jika ada
+                'qty'            => $request->quantity,
+                'unit_price'     => $price,
+                'subtotal'       => $totalAmount,
+            ]);
+
+            Payment::create([
+                'order_id' => $order->id,
+                'amount'   => $order->total_amount,
+                'status'   => 'PENDING',
+            ]);
+
+            return redirect()->route('payment.show', $order->id)
+                ->with('success', 'Order berhasil dibuat. Silakan lanjutkan ke pembayaran.');
+        });
     }
 }

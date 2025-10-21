@@ -80,6 +80,9 @@ Route::get('/orders/history', [OrderController::class, 'history'])->name('orders
 
 // === AUTH & HOME ===
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/about', function() {
+    return view('about');
+})->name('about');
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.do');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
@@ -101,7 +104,12 @@ Route::middleware(['auth:web,lecturer,user'])->group(function () {
         return view('order-ticket', compact('event'));
     })->name('order.create');
 
-    Route::post('/order', [App\Http\Controllers\OrderController::class, 'placeOrder'])->name('order.store');
+    Route::post('/order', [OrderController::class, 'storeOrder'])->name('order.store');
+    
+    // Payment routes
+    Route::get('/payment/{order}', [PaymentController::class, 'showPayment'])->name('payment.show');
+    Route::post('/payment/{order}/upload', [PaymentController::class, 'uploadProof'])->name('payment.upload');
+    Route::get('/payment/{order}/eticket', [PaymentController::class, 'showEticket'])->name('payment.eticket');
 });
 
 

@@ -7,7 +7,7 @@
   <div class="text-center mb-5">
 <span class="badge mb-2 fs-3 
   bg-light text-dark dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600">
-  FTMMTIX - Event & Ticketing Platform
+  <span class="dark:text-white text-dark">FTMMTIX - Event & Ticketing Platform</span>
 </span>
 
     <!-- Logo FTMMTIX -->
@@ -19,8 +19,8 @@
     </div>
 
     {{-- Judul & Subjudul pakai kelas kustom agar warna bisa beda di Light/Dark --}}
-    <h1 class="fw-bold hero-title">Find & Join Exciting Events of FTMM</h1>
-    <p class="hero-subtitle">
+    <h1 class="fw-bold hero-title text-dark dark:text-white">Find & Join Exciting Events of FTMM</h1>
+    <p class="hero-subtitle text-dark dark:text-white">
       From academic seminars to basketball matches — book your tickets easily and be part of the experience.
     </p>
   </div>
@@ -59,13 +59,13 @@
 
   {{-- Category Filter --}}
   <div class="mb-4">
-    <button class="btn btn-dark btn-sm me-2">All</button>
-    <button class="btn btn-outline-dark btn-sm me-2">Workshop</button>
-    <button class="btn btn-outline-dark btn-sm me-2">Seminar</button>
-    <button class="btn btn-outline-dark btn-sm me-2">Sports</button>
-    <button class="btn btn-outline-dark btn-sm me-2">Networking</button>
-    <button class="btn btn-outline-dark btn-sm me-2">Festival</button>
-    <button class="btn btn-outline-dark btn-sm">Other</button>
+    <button class="btn btn-dark btn-sm me-2 dark:text-white">All</button>
+    <button class="btn btn-outline-dark btn-sm me-2 dark:text-white">Workshop</button>
+    <button class="btn btn-outline-dark btn-sm me-2 dark:text-white">Seminar</button>
+    <button class="btn btn-outline-dark btn-sm me-2 dark:text-white">Sports</button>
+    <button class="btn btn-outline-dark btn-sm me-2 dark:text-white">Networking</button>
+    <button class="btn btn-outline-dark btn-sm me-2 dark:text-white">Festival</button>
+    <button class="btn btn-outline-dark btn-sm dark:text-white">Other</button>
   </div>
 
   {{-- Tombol Tambah Event untuk Admin --}}
@@ -129,7 +129,7 @@
     @foreach($dummyEvents as $event)
       <div class="col-md-6 col-lg-4">
         <div class="event-card h-100">
-          <div class="event-thumb-wrap-auto rounded-top">
+          <div class="event-thumb-wrap-auto rounded-top" style="cursor: pointer;" onclick="showImageModal('{{ asset('images/'.$event['poster']) }}', '{{ $event['title'] }}')">
             <img
               src="{{ asset('images/'.$event['poster']) }}"
               alt="{{ $event['title'] }}"
@@ -141,8 +141,8 @@
               <span class="badge bg-primary">{{ $event['category'] }}</span>
               <span class="badge bg-danger">{{ $event['status'] }}</span>
             </div>
-            <h5 class="fw-bold text-dark">{{ $event['title'] }}</h5>
-            <ul class="list-unstyled small text-muted mb-3">
+            <h5 class="fw-bold text-dark dark:text-white">{{ $event['title'] }}</h5>
+            <ul class="list-unstyled small text-muted mb-3 dark:text-white">
               <li><i class="bi bi-calendar-event"></i> {{ $event['date'] }}</li>
               <li><i class="bi bi-clock"></i> {{ $event['time'] }}</li>
               <li><i class="bi bi-geo-alt"></i> {{ $event['location'] }}</li>
@@ -150,8 +150,8 @@
             </ul>
             <div class="d-flex justify-content-between align-items-center">
               <div>
-                <strong class="text-dark">{{ $event['price'] }}</strong><br>
-                <small class="text-muted">by {{ $event['organizer'] }}</small>
+                <strong class="text-dark dark:text-white">{{ $event['price'] }}</strong><br>
+                <small class="text-muted dark:text-white">by {{ $event['organizer'] }}</small>
               </div>
               @if(!auth()->check() && !auth('lecturer')->check() && !auth('user')->check())
                 <a href="{{ route('login') }}" class="btn btn-dark btn-sm">Get Ticket</a>
@@ -181,7 +181,7 @@
       @if(is_object($eventDB))
       <div class="col-md-6 col-lg-4">
         <div class="event-card h-100">
-          <div class="event-thumb-wrap-auto rounded-top" style="background:#f0f0f0;">
+          <div class="event-thumb-wrap-auto rounded-top" style="cursor: pointer;" onclick="showImageModal('{{ $eventDB->poster_path ? asset('storage/'.$eventDB->poster_path) : asset('images/default-event.jpg') }}', '{{ $eventDB->title }}')">
             <img
               src="{{ $eventDB->poster_path ? asset('storage/'.$eventDB->poster_path) : asset('images/default-event.jpg') }}"
               alt="{{ $eventDB->title }}"
@@ -193,8 +193,8 @@
               <span class="badge bg-primary">{{ $eventDB->category ?? 'Event' }}</span>
               <span class="badge bg-danger">{{ $eventDB->status ?? ($eventDB->is_published ? 'Open' : 'Draft') }}</span>
             </div>
-            <h5 class="fw-bold text-dark">{{ $eventDB->title }}</h5>
-            <ul class="list-unstyled small text-muted mb-3">
+            <h5 class="fw-bold text-dark dark:text-white">{{ $eventDB->title }}</h5>
+            <ul class="list-unstyled small text-muted mb-3 dark:text-white">
               <li><i class="bi bi-calendar-event"></i> {{ \Carbon\Carbon::parse($eventDB->start_at)->translatedFormat('F d, Y') }}</li>
               <li><i class="bi bi-clock"></i> {{ $eventDB->start_at ? \Carbon\Carbon::parse($eventDB->start_at)->format('H:i') : '-' }}{{ $eventDB->end_at ? ' - '.\Carbon\Carbon::parse($eventDB->end_at)->format('H:i') : '' }} WIB</li>
               <li><i class="bi bi-geo-alt"></i> {{ $eventDB->venue }}</li>
@@ -203,8 +203,8 @@
             </ul>
             <div class="d-flex justify-content-between align-items-center">
               <div>
-                <strong class="text-dark">{{ $eventDB->price == 0 ? 'Free' : 'Rp '.number_format($eventDB->price,0,',','.') }}</strong><br>
-                <small class="text-muted">by {{ $eventDB->organizer ?? 'Admin' }}</small>
+                <strong class="text-dark dark:text-white">{{ $eventDB->price == 0 ? 'Free' : 'Rp '.number_format($eventDB->price,0,',','.') }}</strong><br>
+                <small class="text-muted dark:text-white">by {{ $eventDB->organizer ?? 'Admin' }}</small>
               </div>
               @if(!auth()->check() && !auth('lecturer')->check() && !auth('user')->check())
                 <a href="{{ route('login') }}" class="btn btn-dark btn-sm">Get Ticket</a>
@@ -234,7 +234,30 @@
   {{-- Debug Info --}}
   {{----}}
 </div>
+
+{{-- Modal untuk Zoom Image --}}
+<div class="modal fade" id="imageZoomModal" tabindex="-1" aria-labelledby="imageZoomModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="imageZoomModalLabel">Event Poster</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="zoomImage" src="" alt="Event Poster" class="img-fluid" style="max-height: 70vh;">
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
+function showImageModal(imageSrc, title) {
+  document.getElementById('zoomImage').src = imageSrc;
+  document.getElementById('imageZoomModalLabel').textContent = title;
+  const modal = new bootstrap.Modal(document.getElementById('imageZoomModal'));
+  modal.show();
+}
+
 const searchInput = document.querySelector('input[placeholder="Search events..."]');
 const priceDropdown = document.querySelector('.dropdown-menu');
 const priceBtn = document.querySelector('.dropdown-toggle');
